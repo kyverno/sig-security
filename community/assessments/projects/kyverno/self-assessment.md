@@ -2,12 +2,12 @@
 
 |**Completed**:               | *tbd*                                 |
 |-----------------------------|---------------------------------------|
-|**Security reviewer(s)**:    | <!-- cspell:disable --> John Kinsella, Wesley Steehouwer (@dutchshark) |
+|**Security reviewer(s)**:    | <!-- cspell:disable --> |
 |**Project security lead**:   | <!-- cspell:disable --> Jim Bugwadia  |
-| **Source code**:            | https://github.com/kyverno/kyverno    |
-| **Web site**:               | https://kyverno.io/                   |
+| **Source code**:            | [Kyverno](https://github.com/kyverno/kyverno)    |
+| **Web site**:               | [kyverno.io](https://kyverno.io/)                |
 
-# Table of contents
+### Table of contents
 
 * [Metadata](#metadata)
   * [Security links](#security-links)
@@ -22,45 +22,46 @@
 * [Security issue resolution](#security-issue-resolution)
 * [Appendix](#appendix)
 
-## Metadata
+### Metadata
 
 |   |  |
 | -- | -- |
-| Software | https://github.com/kyverno/kyverno  |
+| Software | [Kyverno](https://github.com/kyverno/kyverno)  |
 | Security Provider | Yes  |
 | Languages | Go |
-| SBOM | To download and verify the SBOM for a specific version, visit https://kyverno.io/docs/security/#fetching-the-sbom-for-kyverno |
-| Compatibility | https://kyverno.io/docs/installation/#compatibility-matrix |
+| SBOM | To download and verify the SBOM for a specific version, visit [this page](https://kyverno.io/docs/security/#fetching-the-sbom-for-kyverno) |
+| Compatibility | [matrix](https://kyverno.io/docs/installation/#compatibility-matrix) |
 | | |
 
-### Security links
+#### Security links
 
 | Doc | url |
 | -- | -- |
-| Kyverno Security Documentation | https://main.kyverno.io/docs/security/ |
+| Kyverno Security Documentation | [security](https://main.kyverno.io/docs/security/) |
 
-## Overview
+### Overview
 
 Kyverno helps secure and automates Kubernetes configurations using policies defined as Kubernetes custom resources. It operates as an Kubernetes admission controller and a command-line for off-cluster use.
 
-### Background
+#### Background
 
-Kubernetes has a declarative configuration management system that allows users to specify the desired state of resources which Kubernetes controllers continuously reconcile with the current system state. For flexibility, and to address a wide set of use cases, Kubernetes provides several configuration options for each resource. 
+Kubernetes has a declarative configuration management system that allows users to specify the desired state of resources which Kubernetes controllers continuously reconcile with the current system state. For flexibility, and to address a wide set of use cases, Kubernetes provides several configuration options for each resource.
 
 While this is powerful, it also creates a few challenges:
-1. Only a small subset of configuration options are commonly used. 
+
+1. Only a small subset of configuration options are commonly used.
 2. Kubernetes configurations are not secure by default. Security and best practices need to be configured for workloads.
 3. A resource's configurations is shared across organizational roles (dev-sec-ops) and chances of misconfigurations, or lack of proper configuration, increase as there is no clear ownership. Whether developers, operators, or security engineers are responsible for more `advanced` configuration settings may not be obvious.
 
-### Goals
+#### Goals
 
 The goal of the Kyverno project is to simplify Kubernetes configuration security and automate processes that otherwise require manual handoffs and coordination across Kubernetes cluster operators and developers.
 
-### Non-goals
+#### Non-goals
 
 Kyverno is not a general purpose policy engine i.e. it is not designed for use outside of Kubernetes.
 
-## Self-assessment use
+### Self-assessment use
 
 This self-assessment is created by the Kyverno team to perform an internal analysis of the
 project's security.  It is not intended to provide a security audit of Kyverno, or
@@ -113,28 +114,29 @@ The `Cleanup Controller` component cleans up existing resources by either using 
 Kyverno can be installed using a [Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) or YAML files (see [installation doc](https://kyverno.io/docs/installation/)).  
 
 The Kyverno application consists of a:
+
 1. Deployments
-  - Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, Policy Exceptions, and the processing engine.
-  - Background controller (optional): The component responsible for processing of generate and mutate-existing rules.
-  - Reports controller (optional): The component responsible for handling of Policy Reports.
-  - Cleanup controller (optional): The component responsible for processing of Cleanup Policies.
+  * Admission controller (required): The main component of Kyverno which handles webhook callbacks from the API server for verification, mutation, Policy Exceptions, and the processing engine.
+  * Background controller (optional): The component responsible for processing of generate and mutate-existing rules.
+  * Reports controller (optional): The component responsible for handling of Policy Reports.
+  * Cleanup controller (optional): The component responsible for processing of Cleanup Policies.
 2. Services
-  - Services needed to receive webhook requests.
-  - Services needed for monitoring of metrics.
+  * Services needed to receive webhook requests.
+  * Services needed for monitoring of metrics.
 3. ServiceAccounts
-  - One ServiceAccount per controller to segregate and confine the permissions needed for each controller to operate on the resources for which it is responsible.
+  * One ServiceAccount per controller to segregate and confine the permissions needed for each controller to operate on the resources for which it is responsible.
 4. ConfigMaps
-  - ConfigMap for holding the main Kyverno configuration.
-  - ConfigMap for holding the metrics configuration.
+  * ConfigMap for holding the main Kyverno configuration.
+  * ConfigMap for holding the metrics configuration.
 5. Secrets
-  - Secrets for webhook registration and authentication with the API server.
+  * Secrets for webhook registration and authentication with the API server.
 6. Roles and Bindings
-  - Roles and ClusterRoles, Bindings and ClusterRoleBindings authorizing the various ServiceAccounts to act on the resources in their scope.
+  * Roles and ClusterRoles, Bindings and ClusterRoleBindings authorizing the various ServiceAccounts to act on the resources in their scope.
 7. Webhooks
-  - ValidatingWebhookConfigurations for receiving both policy and resource validation requests.
-  - MutatingWebhookConfigurations for receiving both policy and resource mutating requests.
+  * ValidatingWebhookConfigurations for receiving both policy and resource validation requests.
+  * MutatingWebhookConfigurations for receiving both policy and resource mutating requests.
 8. CustomResourceDefinitions
-  - CRDs which define the custom resources corresponding to policies, reports, and their intermediary resources.
+  * CRDs which define the custom resources corresponding to policies, reports, and their intermediary resources.
 
 When Kyverno runs, it will check for a named `Secret` with a certificate to use for webhook registration. If the secret does not exist, Kyverno will generate a self-signed certificate and store it in the secret. Kyverno will then generate or update the mutating and validating webhook configurations.
 
@@ -153,9 +155,7 @@ A threat model for admission controllers is published and maintained by the Kube
   * [Blog post](https://kubernetes.io/blog/2022/01/19/secure-your-admission-controllers-and-webhooks/)
 
 
-The Kyverno security document references this threat model and discusses mitigations and best practices:
-
-   https://main.kyverno.io/docs/security/#threat-model
+The Kyverno security document references this threat model and discusses mitigations and best practices, see [here](https://main.kyverno.io/docs/security/#threat-model).
 
 ## Project compliance
 
@@ -171,13 +171,13 @@ All code is maintained in [Git](https://github.com/kyverno/kyverno/) and changes
 
 ### Artifacts
 
-The [Kyverno container images](https://github.com/orgs/kyverno/packages) are hosted in GitHub Container Registry (GHCR). Container images are signed using Sigstore Cosign (https://main.kyverno.io/docs/security/#verifying-kyverno-container-images.)
+The [Kyverno container images](https://github.com/orgs/kyverno/packages) are hosted in GitHub Container Registry (GHCR). Container images are signed using [Sigstore Cosign](https://main.kyverno.io/docs/security/#verifying-kyverno-container-images).
 
-The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) is hosted in ArtifactHub. There is a pending issue to to sign the Helm Chart using Sigstore Cosign (https://github.com/kyverno/kyverno/issues/2758).
+The [Kyverno Helm chart](https://artifacthub.io/packages/helm/kyverno/kyverno) is hosted in ArtifactHub. There is a pending [issue]((https://github.com/kyverno/kyverno/issues/2758)) to to sign the Helm Chart using Sigstore Cosign.
 
 The [Kyverno installation YAMLs](https://github.com/kyverno/kyverno/blob/main/config/install-latest-testing.yaml) are hosted in the GitHub repository.
 
-A Software Bill of Materials (SBOM) is produced and made available for each release (https://main.kyverno.io/docs/security/#fetching-the-sbom-for-kyverno).
+A [Software Bill of Materials (SBOM)](https://main.kyverno.io/docs/security/#fetching-the-sbom-for-kyverno) is produced and made available for each release.
 
 ### Communication Channels
 
@@ -188,9 +188,7 @@ A Software Bill of Materials (SBOM) is produced and made available for each rele
 
 ## Security issue resolution
 
-Kyverno's processes for security issue resolution, responsible disclosure, vulnerability response, and incident response are documented at:
-
-   https://main.kyverno.io/docs/security/
+Kyverno's processes for security issue resolution, responsible disclosure, vulnerability response, and incident response are documented at the [security page](https://main.kyverno.io/docs/security/).
 
 A security email alias [kyverno-security](mailto:kyverno-security@googlegroups.com) is available for security disclosures and related communications.
 
@@ -198,9 +196,7 @@ A security email alias [kyverno-security](mailto:kyverno-security@googlegroups.c
 
 ### Known Issues Over Time
 
-All Kyverno security related issues (both fixes and enhancements) are labeled with "security" and can be queried using:
-
-  https://github.com/kyverno/kyverno/labels/security
+All Kyverno security related issues (both fixes and enhancements) are labeled with "security" and can be queried using [GitHub label filter](https://github.com/kyverno/kyverno/labels/security).
 
 ### [Open SSF Best Practices](https://www.bestpractices.dev/en)
 
@@ -210,5 +206,5 @@ The Kyverno project has adopted the OSSF/Scorecard and is tracking progress in [
 
 [OPA/Gatekeeper](https://github.com/open-policy-agent/gatekeeper) is another CNCF project that acts as an admission controller and supports policy management. It uses [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) as its policy language. 
 
-A detailed comparison is available at: https://neonmirrors.net/post/2021-02/kubernetes-policy-comparison-opa-gatekeeper-vs-kyverno/.
+A detailed comparison is available at: [Kubernetes Policy Comparison: OPA/Gatekeeper vs Kyverno](https://neonmirrors.net/post/2021-02/kubernetes-policy-comparison-opa-gatekeeper-vs-kyverno/).
 
